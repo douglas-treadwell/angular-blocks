@@ -25,15 +25,20 @@
 
                         function override(method, $block, attr) {
                             var name = $block.attr(attr);
+                            var $blockReplace = $block;
+                          
                             if(method === 'replaceWith') {
-                              //copy attributes first
-                              var tplBlock = $template.find('[data-block="' + name + '"]');
-                              var attributes = tplBlock.prop("attributes");
-                              angular.forEach(attributes, function(attribute) {
-                                $block.attr(attribute.name, attribute.value);
-                              });
+                              $blockReplace = function() {
+                                var $clonedBlock = $block.clone();
+                                //copy attributes first
+                                var attributes = $(this).prop("attributes");
+                                angular.forEach(attributes, function(attribute) {
+                                  $clonedBlock.attr(attribute.name, attribute.value);
+                                });
+                              };
                             }
-                            if ($template.find('[data-block="' + name + '"]')[method]($block).length === 0 &&
+                          
+                            if ($template.find('[data-block="' + name + '"]')[method]($blockReplace).length === 0 &&
                                 $template.find('[data-extend-template]').append($block).length === 0) {
                                 warnMissingBlock(name, src);
                             }
