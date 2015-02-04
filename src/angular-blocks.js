@@ -35,6 +35,7 @@
                                 angular.forEach(attributes, function(attribute) {
                                   $clonedBlock.attr(attribute.name, attribute.value);
                                 });
+                                return $clonedBlock;
                               };
                             }
                           
