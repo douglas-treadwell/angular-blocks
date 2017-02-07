@@ -7,7 +7,7 @@
         function warnMissingBlock(name, src) {
             $log.warn('Failed to find data-block=' + name + ' in ' + src);
         }
-        
+
         var compiledCache = {}
 
         return {
@@ -16,13 +16,13 @@
                 if (!src) {
                     throw 'Template not specified in extend-template directive';
                 }
-                
+
                 var contents = tElement[0].outerHTML
-                
+
                 // Clone and then clear the template element to prevent expressions from being evaluated
                 var $clone = tElement.clone();
                 tElement.html('');
-                
+
                 var compiled
                 if(!compiledCache[contents]) {
                     compiledCache[contents] = $http.get(src, {cache: $templateCache})
@@ -40,7 +40,13 @@
                                       //copy attributes first
                                       var attributes = $(this).prop("attributes");
                                       angular.forEach(attributes, function(attribute) {
-                                          $clonedBlock.attr(attribute.name, attribute.value);
+                                          if(attribute.name === 'class') {
+                                              attribute.value.split(' ').forEach(function(clazz) {
+                                                  $clonedBlock.addClass(clazz)
+                                              })
+                                          } else {
+                                              $clonedBlock.attr(attribute.name, attribute.value);
+                                          }
                                       });
                                       return $clonedBlock;
                                   };
@@ -90,8 +96,8 @@
                 return function ($scope, $element) {
                     compiled.then(function ($template) {
                         return $template($scope, function($cloned, scope) {
-                            $element.replaceWith($cloned)
-                        })           
+                            $element.html($cloned)
+                        })
                     });
                 };
             }
